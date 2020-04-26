@@ -16,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -26,6 +27,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.function.Predicate;
+
+import static springfox.documentation.builders.PathSelectors.regex;
 
 @SpringBootApplication
 @Slf4j
@@ -50,8 +54,8 @@ public class InnovsolvtechOfflineAssessmentApplication {
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .paths(PathSelectors.ant("/api/planets/*"))
-                .apis(RequestHandlerSelectors.basePackage("com.doncorp"))
+                 .paths(PathSelectors.regex("/.*"))
+                .apis(RequestHandlerSelectors.basePackage("com.doncorp.innovsolvtechofflineassessment.controller"))
                 .build()
                 .apiInfo(apiDetails());
 
@@ -67,6 +71,7 @@ public class InnovsolvtechOfflineAssessmentApplication {
                 "www.discovery.co.za",
                 Collections.emptyList());
     }
+
     @Bean
     @Order(value = 1)
     public CommandLineRunner demo(PlanetRepository planetRepository, TrafficRepository trafficRepository, RouteRepository routeRepository) {
