@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/planets")
 public class PlanetController {
 private static final String PLANET_NOT_FOUND_MSG="Planet not found with id :";
