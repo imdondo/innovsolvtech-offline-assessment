@@ -16,12 +16,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collections;
 
 @SpringBootApplication
 @Slf4j
+@EnableSwagger2
 public class InnovsolvtechOfflineAssessmentApplication {
     @Autowired
     private static PlanetRepository planetRepository;
@@ -30,11 +38,35 @@ public class InnovsolvtechOfflineAssessmentApplication {
     @Autowired
     private static TrafficRepository trafficRepository;
 
+    private static String EXCEL_FILE="Worksheet-in-HR-OffsiteAssignmentV30.xlsx";
+
     public static void main(String args[]) throws IOException {
         SpringApplication.run(InnovsolvtechOfflineAssessmentApplication.class, args);
 
     }
 
+    @Bean
+    public Docket SwaggerConfiguration(){
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .paths(PathSelectors.ant("/api/planets/*"))
+                .apis(RequestHandlerSelectors.basePackage("com.doncorp"))
+                .build()
+                .apiInfo(apiDetails());
+
+    }
+    private ApiInfo apiDetails(){
+        return new ApiInfo(
+                "Planets API",
+                "Sample API for Planets ",
+                "1.0",
+                "Free to use ",
+                new springfox.documentation.service.Contact("Iggy ", "http://discovery.co.za","imdondo@gmail.com"),
+                "API License",
+                "www.discovery.co.za",
+                Collections.emptyList());
+    }
     @Bean
     @Order(value = 1)
     public CommandLineRunner demo(PlanetRepository planetRepository, TrafficRepository trafficRepository, RouteRepository routeRepository) {
@@ -48,7 +80,7 @@ public class InnovsolvtechOfflineAssessmentApplication {
 
     private void createPlanets(PlanetRepository planetRepository) throws IOException {
         // save a few planets
-        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource("Worksheet-in-HR-OffsiteAssignmentV30.xlsx").getFile())) {
+        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource(EXCEL_FILE).getFile())) {
             XSSFSheet sheet;
             try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
                 sheet = workbook.getSheetAt(0);
@@ -79,7 +111,7 @@ public class InnovsolvtechOfflineAssessmentApplication {
 
     private void createTraffic(TrafficRepository trafficRepository) throws IOException {
         // save a few traffic items
-        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource("Worksheet-in-HR-OffsiteAssignmentV30.xlsx").getFile())) {
+        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource(EXCEL_FILE).getFile())) {
 
             XSSFSheet sheet;
             try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
@@ -123,7 +155,7 @@ public class InnovsolvtechOfflineAssessmentApplication {
 
     private void createRoutes(RouteRepository routeRepository) throws IOException {
         // save a few routes
-        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource("Worksheet-in-HR-OffsiteAssignmentV30.xlsx").getFile())) {
+        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource(EXCEL_FILE).getFile())) {
             XSSFSheet sheet;
             try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
                 sheet = workbook.getSheetAt(1);

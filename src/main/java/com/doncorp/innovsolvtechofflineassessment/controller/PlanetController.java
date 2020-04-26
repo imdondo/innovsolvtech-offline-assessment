@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@RequestMapping("/api/planets")
 public class PlanetController {
-
+private static final String PLANET_NOT_FOUND_MSG="Planet not found with id :";
     @Autowired
     private PlanetRepository planetRepository;
 
@@ -26,7 +27,7 @@ public class PlanetController {
     @GetMapping("/{id}")
     public Planet getPlanetById(@PathVariable(value = "id") int planetId) {
         return this.planetRepository.findById(planetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Planet not found with id :" + planetId));
+                .orElseThrow(() -> new ResourceNotFoundException(PLANET_NOT_FOUND_MSG + planetId));
     }
 
     // create planet
@@ -39,7 +40,7 @@ public class PlanetController {
     @PutMapping("/{id}")
     public Planet updatePlanet(@RequestBody Planet planet, @PathVariable ("id") int planetId) {
         Planet existingPlanet = this.planetRepository.findById(planetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Planet not found with id :" + planetId));
+                .orElseThrow(() -> new ResourceNotFoundException(PLANET_NOT_FOUND_MSG + planetId));
         existingPlanet.setPlanetNode(planet.getPlanetNode());
         existingPlanet.setPlanetName(planet.getPlanetName());
         return this.planetRepository.save(existingPlanet);
@@ -49,7 +50,7 @@ public class PlanetController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Planet> deletePlanet(@PathVariable ("id") int planetId){
         Planet existingPlanet = this.planetRepository.findById(planetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Planet not found with id :" + planetId));
+                .orElseThrow(() -> new ResourceNotFoundException(PLANET_NOT_FOUND_MSG+ planetId));
         this.planetRepository.delete(existingPlanet);
         return ResponseEntity.ok().build();
     }
