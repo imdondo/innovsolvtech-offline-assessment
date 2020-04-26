@@ -74,95 +74,94 @@ public class InnovsolvtechOfflineAssessmentApplication {
                 log.info(planet.toString());
                 planetRepository.save(planet);
             }
-            excelFile.close();
         }
     }
 
     private void createTraffic(TrafficRepository trafficRepository) throws IOException {
         // save a few traffic items
-        FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource("Worksheet-in-HR-OffsiteAssignmentV30.xlsx").getFile());
+        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource("Worksheet-in-HR-OffsiteAssignmentV30.xlsx").getFile())) {
 
-        XSSFSheet sheet;
-        try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
-            sheet = workbook.getSheetAt(2);
+            XSSFSheet sheet;
+            try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
+                sheet = workbook.getSheetAt(2);
+            }
+            Row row;
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {  //points to the starting of excel i.e excel first row
+                row = sheet.getRow(i);  //sheet number
+
+                int routeId;
+                if (row.getCell(2) == null) routeId = 0;
+                routeId = (int) row.getCell(0).getNumericCellValue();   //else copies cell data to name variable
+
+                String origin;
+                if (row.getCell(1) == null) {
+                    origin = "null";
+                }  //suppose excel cell is empty then its set to 0 the variable
+                else origin = row.getCell(1).toString();   //else copies cell data to name variable
+                log.info("This is the origin " + origin);
+                String destination;
+                if (row.getCell(2) == null) {
+                    destination = "null";
+                } else destination = row.getCell(2).toString();
+                log.info("This is the destination " + destination);
+                Double distance;
+                if (row.getCell(3) == null) {
+                    distance = 0.0;
+                } else distance = row.getCell(3).getNumericCellValue();
+                log.info("This is the delay" + distance);
+                Traffic traffic = new Traffic();
+
+                traffic.setPlanetOrigin(origin);
+                traffic.setPlanetDestination(destination);
+                traffic.setTrafficDelay(distance);
+                log.info(traffic.getPlanetOrigin() + " " + traffic.getPlanetDestination() + "" + traffic.getTrafficDelay());
+                log.info(traffic.toString());
+                trafficRepository.save(traffic);
+            }
         }
-        Row row;
-        for (int i = 1; i <= sheet.getLastRowNum(); i++) {  //points to the starting of excel i.e excel first row
-            row = sheet.getRow(i);  //sheet number
-
-            int routeId;
-            if (row.getCell(2) == null) routeId = 0;
-            routeId = (int) row.getCell(0).getNumericCellValue();   //else copies cell data to name variable
-
-            String origin;
-            if (row.getCell(1) == null) {
-                origin = "null";
-            }  //suppose excel cell is empty then its set to 0 the variable
-            else origin = row.getCell(1).toString();   //else copies cell data to name variable
-            log.info("This is the origin " + origin);
-            String destination;
-            if (row.getCell(2) == null) {
-                destination = "null";
-            } else destination = row.getCell(2).toString();
-            log.info("This is the destination " + destination);
-            Double distance;
-            if (row.getCell(3) == null) {
-                distance = 0.0;
-            } else distance = row.getCell(3).getNumericCellValue();
-            log.info("This is the delay" + distance);
-            Traffic traffic = new Traffic();
-
-            traffic.setPlanetOrigin(origin);
-            traffic.setPlanetDestination(destination);
-            traffic.setTrafficDelay(distance);
-            log.info(traffic.getPlanetOrigin() + " " + traffic.getPlanetDestination() + "" + traffic.getTrafficDelay());
-            log.info(traffic.toString());
-            trafficRepository.save(traffic);
-        }
-        excelFile.close();
     }
 
     private void createRoutes(RouteRepository routeRepository) throws IOException {
         // save a few routes
-        FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource("Worksheet-in-HR-OffsiteAssignmentV30.xlsx").getFile());
-        XSSFSheet sheet;
-        try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
-            sheet = workbook.getSheetAt(1);
-        }
-        Row row;
-        for (int i = 1; i <= sheet.getLastRowNum(); i++) {  //points to the starting of excel i.e excel first row
-            row = sheet.getRow(i);  //sheet number
-
-            int routeId;
-            //suppose excel cell is empty then its set to 0 the variable
-            if (row.getCell(0) == null) routeId = 0;
-            else {
-                routeId = (int) row.getCell(0).getNumericCellValue();   //else copies cell data to name variable
+        try (FileInputStream excelFile = new FileInputStream(InnovsolvtechOfflineAssessmentApplication.class.getClassLoader().getResource("Worksheet-in-HR-OffsiteAssignmentV30.xlsx").getFile())) {
+            XSSFSheet sheet;
+            try (XSSFWorkbook workbook = new XSSFWorkbook(excelFile)) {
+                sheet = workbook.getSheetAt(1);
             }
+            Row row;
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {  //points to the starting of excel i.e excel first row
+                row = sheet.getRow(i);  //sheet number
 
-            String origin;
-            if (row.getCell(1) == null) {
-                origin = "null";
-            } else origin = row.getCell(1).toString();
+                int routeId;
+                //suppose excel cell is empty then its set to 0 the variable
+                if (row.getCell(0) == null) routeId = 0;
+                else {
+                    routeId = (int) row.getCell(0).getNumericCellValue();   //else copies cell data to name variable
+                }
 
-            String destination;
-            if (row.getCell(2) == null) {
-                destination = "null";
-            } else destination = row.getCell(2).toString();
+                String origin;
+                if (row.getCell(1) == null) {
+                    origin = "null";
+                } else origin = row.getCell(1).toString();
 
-            Double distance;
-            if (row.getCell(3) == null) {
-                distance = 0.0;
-            } else distance = row.getCell(3).getNumericCellValue();
-            Route route = new Route();
-            route.setPlanetOrigin(origin);
-            route.setPlanetDestination(destination);
-            route.setDistance(distance);
-            log.info(route.getPlanetOrigin() + " " + route.getPlanetDestination() + route.getDistance());
-            log.info(route.toString());
-            routeRepository.save(route);
+                String destination;
+                if (row.getCell(2) == null) {
+                    destination = "null";
+                } else destination = row.getCell(2).toString();
+
+                Double distance;
+                if (row.getCell(3) == null) {
+                    distance = 0.0;
+                } else distance = row.getCell(3).getNumericCellValue();
+                Route route = new Route();
+                route.setPlanetOrigin(origin);
+                route.setPlanetDestination(destination);
+                route.setDistance(distance);
+                log.info(route.getPlanetOrigin() + " " + route.getPlanetDestination() + route.getDistance());
+                log.info(route.toString());
+                routeRepository.save(route);
+            }
         }
-        excelFile.close();
     }
 }
 
